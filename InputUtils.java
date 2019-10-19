@@ -29,7 +29,7 @@ public class InputUtils
         Scanner scan = new Scanner(System.in);
 
         System.out.print(message);
-        if(scan.hasNextInt()) {
+        if(scan.hasNextDouble()) {
 
             result = scan.nextDouble();
         }

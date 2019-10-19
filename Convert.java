@@ -1,8 +1,8 @@
-package main_package;
+package com.javacommon;
 
 public class Convert
 {
-    private static int tryParse(String element,int defvalue)
+    private static Integer tryParse(String element,int defaultValue)
     {
         try
         {
@@ -10,11 +10,11 @@ public class Convert
         }
         catch (NumberFormatException e)
         {
-            return defvalue;
+            return null;
         }
     }
 
-    private static double tryParse(String element,double defvalue)
+    private static Double tryParse(String element,double defaultValue)
     {
         try
         {
@@ -22,16 +22,16 @@ public class Convert
         }
         catch (NumberFormatException e)
         {
-            return defvalue;
+            return null;
         }
     }
 
-    public static int toInteger(String element)
+    public static Integer toInteger(String element)
     {
         return tryParse(element,0);
     }
 
-    public static double toDouble(String element)
+    public static Double toDouble(String element)
     {
         return tryParse(element,0.0);
     }

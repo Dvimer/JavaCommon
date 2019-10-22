@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class InputUtils
 {
 
-    public static Integer getInt(String message) {
+    public static Integer getInteger(String message) {
 
         Integer result = null;
         Scanner scan = new Scanner(System.in);
@@ -17,7 +17,7 @@ public class InputUtils
             result = scan.nextInt();
         }
         else {
-            result = getInt(message);
+            result = getInteger(message);
         }
 
         return result;

@@ -89,7 +89,9 @@ public class SimpleArrayList<T> implements SimpleList<T> {
                 }
             }
         }
-        internalArray[index] = element;
+        else{
+            internalArray[index] = element;
+        }        
     }
 
     @Override

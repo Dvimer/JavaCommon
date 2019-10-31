@@ -14,10 +14,10 @@ public class Main {
         }
 
         my_list.removeAt(33);
+        System.out.println(my_list.get(33));
 
-        for(var i=0;i<my_list.size();i++){
-            System.out.println(my_list.get(i));
-
+        for (Integer item: my_list) {
+            System.out.println(item);
         }
 
     }

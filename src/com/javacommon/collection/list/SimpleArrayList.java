@@ -7,15 +7,15 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     private int currentSize = 0;
     private int realSize = 0;
     private int maxSize = 32;
-    private final int START_SIZE = 32;
-    private boolean hasFree = false;
-    Object[] internalArray;
 
-    public SimpleArrayList(){
-        internalArray = new Object[START_SIZE];
+    private boolean hasFree = false;
+    private Object[] internalArray;
+
+    public SimpleArrayList() {
+        this(32);
     }
 
-    public SimpleArrayList(int capacity){
+    private SimpleArrayList(int capacity){
         internalArray = new Object[capacity];
     }
 
@@ -30,11 +30,14 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     }
 
     @Override
-    public <T> T[] toArray(T[] array) {
-        resize();
+    @SuppressWarnings("unchecked")
+    public <E> E[] toArray(E[] array) {
+        if(hasFree) {
+            free();
+        }
 
         for (var i = 0; i < array.length; i++) {
-                array[i] = (T) internalArray[i];
+            array[i] = (E) internalArray[i];
         }
         return array;
     }
@@ -45,47 +48,62 @@ public class SimpleArrayList<T> implements SimpleList<T> {
             resize();
         }
 
-        internalArray[realSize] = (Object)element;
+        internalArray[realSize] = element;
         currentSize++;
         realSize++;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T get(int index) {
-        T element = null;
-        if(hasFree != false) {
+        Object element = null;
+        if(hasFree) {
             int currentIndex = 0;
 
-            for (var i=0;i<internalArray.length;i++) {
-                if(internalArray[i] != null) {
+            for (Object item : internalArray) {
+                if(item != null) {
                     if(currentIndex == index) {
-                        element = (T)internalArray[i];
+                        element = item;
                     }
                     currentIndex++;
                 }
             }
         }
         else {
-            element = (T)internalArray[index];
+            element = internalArray[index];
         }
-        return element;
+        return (T)element;
     }
 
     @Override
     public void set(int index, T element) {
-        if(hasFree != false){
+        if(hasFree){
             int currentIndex = 0;
 
-            for (var i=0;i<internalArray.length;i++){
-                if(internalArray[i] != null) {
+            for (Object item : internalArray) {
+                if(item != null) {
                     if(currentIndex == index) {
-                        internalArray[index] = (T)element;
+                        internalArray[index] = element;
                     }
                     currentIndex++;
                 }
             }
         }
-        internalArray[index] = (T)element;
+        internalArray[index] = element;
+    }
+
+    @Override
+    public void remove(T element) {
+        int index = -1;
+
+        for(var i=0;i<internalArray.length;i++){
+            if(element == this.get(i)){
+                index = i;
+            }
+        }
+        if(index != -1){
+            this.removeAt(index);
+        }
     }
 
     @Override
@@ -96,56 +114,63 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     }
 
     @Override
-    public void remove(T element) {
-
-    }
-
-    @Override
     public void clear() {
-        internalArray = new Object[START_SIZE];
+        internalArray = new Object[32];
         currentSize = 0;
         maxSize = 0;
     }
 
     @Override
     public boolean contains(T element) {
-        return false;
+        boolean result = false;
+        for (Object item : internalArray) {
+            if(item == element) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
     @Override
-    public int indexOf(Object o) {
+    public int indexOf(T element) {
         return 0;
     }
 
     @Override
-    public int lastIndexOf(Object o) {
+    public int lastIndexOf(T element) {
         return 0;
+    }
+
+    private void free() {
+        int free = 0;
+        Object[] newarray = new Object[maxSize];
+        for (Object item : internalArray) {
+            if(item != null) {
+                newarray[free] = item;
+                free++;
+            }
+        }
+        internalArray = newarray;
+        realSize = currentSize = free;
+        hasFree = false;
     }
 
     private void resize() {
         maxSize *= 2;
 
-        if(hasFree == false) {
+        if(!hasFree) {
             internalArray = Arrays.copyOf(internalArray, maxSize);
         }
-        else{
-            int free = 0;
-            Object[] newarray = new Object[maxSize];
-            for (var i=0;i<internalArray.length;i++) {
-                if(internalArray[i] != null) {
-                    newarray[free] = internalArray[i];
-                    free++;
-                }
-            }
-            internalArray = newarray;
-            realSize = currentSize = free;
-            hasFree = false;
+        else {
+            free();
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<T> iterator() {
-        Iterator<T> it = new Iterator<T>() {
+        return new Iterator<>() {
 
             private int currentIndex = 0;
 
@@ -156,12 +181,11 @@ public class SimpleArrayList<T> implements SimpleList<T> {
 
             @Override
             public T next() {
-                if(hasFree != false) {
-                    resize();
+                if(hasFree) {
+                    free();
                 }
                 return (T) internalArray[currentIndex++];
             }
         };
-        return it;
     }
 }

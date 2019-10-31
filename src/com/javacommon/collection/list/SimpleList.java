@@ -8,11 +8,11 @@ public interface SimpleList<T> extends Iterable<T> {
 
     boolean isEmpty();
 
-    public <T> T[] toArray(T[] array);
+    public <E> E[] toArray(E[] array);
 
     void add(T element);
 
-    public T get(int index);
+    public Object get(int index);
 
     public void set(int index, T element);
 
@@ -24,9 +24,9 @@ public interface SimpleList<T> extends Iterable<T> {
 
     boolean contains(T element);
 
-    public int indexOf(Object o);
+    public int indexOf(T element);
 
-    public int lastIndexOf(Object o);
+    public int lastIndexOf(T element);
 
     Iterator<T> iterator();
 
